@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     Button click;
     EditText input;
     TextView myText;
+    CheckBox checkBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
         input = findViewById(R.id.input);
         myText = findViewById(R.id.myText);
 
+        checkBox = findViewById(R.id.checkBox);
+
+        myText.setText("Click me, you know you want to");
+
         myText.setText("Input Something");
 
         click.setOnClickListener(new View.OnClickListener() {
@@ -50,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void transferText(){
         String text = input.getText().toString();
-        myText.setText(text);
+        myText.setText(text + " " + checkBox.isChecked());
     }
 
     // https://developer.android.com/studio/debug/am-logcat
