@@ -1,9 +1,11 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +17,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     Button button;
+    EditText nameInput;
 
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,19 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
+
+        nameInput = findViewById(R.id.nameInput);
+
+        String s = prefs.getString("name", null);
+
+        if (s==null) {
+            nameInput.setText("boo");
+        }
+        else {
+            nameInput.setText(s);
+        }
+
         button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,6 +59,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToNext(){
+        String text = nameInput.getText().toString();
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putString("name", text);
+        edit.apply();
+
         Intent intent = new Intent(this, SecondActivity.class);
         intent.putExtra("name","Jennie");
         intent.putExtra("name2","Lisa");
