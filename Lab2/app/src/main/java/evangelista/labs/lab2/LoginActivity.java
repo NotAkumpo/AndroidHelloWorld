@@ -15,6 +15,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 public class LoginActivity extends AppCompatActivity {
 
 
@@ -25,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordInputL;
     CheckBox rememberMe;
     Button clearButton;
+    Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,18 +53,26 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
-        String existingUsername = prefs.getString("username", null);
-        String existingPassword = prefs.getString("password", null);
+
+        realm = Realm.getDefaultInstance();
+        RealmResults<User> users = realm.where(User.class).findAll();
 
         usernameInputL = findViewById(R.id.usernameInputL);
         passwordInputL = findViewById(R.id.passwordInputL);
         rememberMe = findViewById(R.id.rememberMe);
 
         boolean remembered = prefs.getBoolean("remembered", false);
+        String currentUuid = prefs.getString("uuid", null);
 
         if (remembered){
-            usernameInputL.setText(existingUsername);
-            passwordInputL.setText(existingPassword);
+            User rememberedUser = realm.where(User.class)
+                    .equalTo("uuid", currentUuid)
+                    .findFirst();
+            String rememberedName = rememberedUser.getName();
+            String rememberedPassword = rememberedUser.getPassword();
+
+            usernameInputL.setText(rememberedName);
+            passwordInputL.setText(rememberedPassword);
         }
         else {}
 
@@ -85,24 +97,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signinUser(){
-        String existingUsername = prefs.getString("username", null);
-        String existingPassword = prefs.getString("password", null);
         String attemptedUsername = usernameInputL.getText().toString();
         String attemptedPassword = passwordInputL.getText().toString();
+        User existingUser = realm.where(User.class)
+                .equalTo("name", attemptedUsername)
+                .findFirst();
 
-        if (existingUsername==null){
-            Toast toast = Toast.makeText(this, "Nothing saved", Toast.LENGTH_LONG);
+        if (existingUser == null){
+            Toast toast = Toast.makeText(this, "No User found", Toast.LENGTH_LONG);
             toast.show();
         }
         else {
-            if (attemptedUsername.equals(existingUsername) && attemptedPassword.equals(existingPassword)){
+            String existingPassword = existingUser.getPassword();
+            if (attemptedPassword.equals(existingPassword)){
+
+                SharedPreferences.Editor edit = prefs.edit();
+                String uuid = existingUser.getUuid();
+                edit.putString("uuid", uuid);
+
                 if (rememberMe.isChecked()){
-                    SharedPreferences.Editor edit = prefs.edit();
                     edit.putBoolean("remembered", true);
                     edit.apply();
                 }
                 else {
-                    SharedPreferences.Editor edit = prefs.edit();
                     edit.putBoolean("remembered", false);
                     edit.apply();
                 }
@@ -121,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
         edit.clear();
         edit.apply();
 
-        Toast toast = Toast.makeText(this, "User cleared", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(this, "Preferences cleared", Toast.LENGTH_LONG);
         toast.show();
     }
 

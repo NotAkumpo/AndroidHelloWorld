@@ -10,10 +10,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 public class WelcomeActivity extends AppCompatActivity {
 
     TextView welcomeTitle;
     SharedPreferences prefs;
+    Realm realm;
 
 
     @Override
@@ -25,14 +29,23 @@ public class WelcomeActivity extends AppCompatActivity {
         welcomeTitle = findViewById(R.id.welcomeTitle);
         prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
 
+        realm = Realm.getDefaultInstance();
+        RealmResults<User> users = realm.where(User.class).findAll();
+
         boolean remembered = prefs.getBoolean("remembered", false);
-        String username = prefs.getString("username", null);
+        String uuid = prefs.getString("uuid", null);
+
+        User rememberedUser = realm.where(User.class)
+                .equalTo("uuid", uuid)
+                .findFirst();
+        String rememberedName = rememberedUser.getName();
 
         if (remembered){
-            welcomeTitle.setText("Welcome " + username + "!!! " + "You will be remembered!");
+
+            welcomeTitle.setText("Welcome " + rememberedName + "!!! " + "You will be remembered!");
         }
         else {
-            welcomeTitle.setText("Welcome " + username + "!!!");
+            welcomeTitle.setText("Welcome " + rememberedName + "!!!");
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
