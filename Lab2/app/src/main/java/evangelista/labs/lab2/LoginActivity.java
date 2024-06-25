@@ -142,4 +142,12 @@ public class LoginActivity extends AppCompatActivity {
         toast.show();
     }
 
+    public void onDestroy(){
+        super.onDestroy();
+
+        if(!realm.isClosed()){
+            realm.close();
+        }
+    }
+
 }

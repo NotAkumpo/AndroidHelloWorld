@@ -54,4 +54,13 @@ public class WelcomeActivity extends AppCompatActivity {
             return insets;
         });
     }
+
+    public void onDestroy(){
+        super.onDestroy();
+
+        if(!realm.isClosed()){
+            realm.close();
+        }
+    }
+
 }
