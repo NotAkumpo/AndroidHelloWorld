@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,7 @@ public class EditActivity extends AppCompatActivity {
     EditText confirmInputE;
     SharedPreferences prefs;
     Realm realm;
+    User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +58,10 @@ public class EditActivity extends AppCompatActivity {
 
         realm = Realm.getDefaultInstance();
 
-        User currentUser = realm.where(User.class)
+        currentUser = realm.where(User.class)
                 .equalTo("uuid", uuid)
                 .findFirst();
 
-
-        usernameInputE.setText(currentUser.getName());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -76,7 +76,47 @@ public class EditActivity extends AppCompatActivity {
         String password = passwordInputE.getText().toString();
         String confirm = confirmInputE.getText().toString();
 
-        
+        User exists = realm.where(User.class)
+                .equalTo("name", username)
+                .findFirst();
+
+        if (username.isBlank()) {
+            Toast toast = Toast.makeText(this, "Name must not be blank", Toast.LENGTH_LONG);
+            toast.show();
+        }
+        else {
+            if (password.isBlank()) {
+                Toast toast = Toast.makeText(this, "Password must not be blank", Toast.LENGTH_LONG);
+                toast.show();
+            }
+            else {
+                if (password.equals(confirm)) {
+                    if(exists != null) {
+                        Toast toast = Toast.makeText(this, "User already exists", Toast.LENGTH_LONG);
+                        toast.show();
+                    }
+                    else {
+
+                        realm.beginTransaction();
+
+                        currentUser.setName(username);
+                        currentUser.setPassword(password);
+
+                        realm.copyToRealmOrUpdate(currentUser);
+                        realm.commitTransaction();
+
+                        Toast toast = Toast.makeText(this, "Changes saved", Toast.LENGTH_LONG);
+                        toast.show();
+
+                        finish();
+                    }
+                }
+                else {
+                    Toast toast = Toast.makeText(this, "Confirm password does not match", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+        }
     }
 
     public void cancelEdit(){
