@@ -91,7 +91,7 @@ public class EditActivity extends AppCompatActivity {
             }
             else {
                 if (password.equals(confirm)) {
-                    if(exists != null) {
+                    if(exists != null && !exists.getName().equals(currentUser.getName())) {
                         Toast toast = Toast.makeText(this, "User already exists", Toast.LENGTH_LONG);
                         toast.show();
                     }
