@@ -1,5 +1,7 @@
 package evangelista.labs.lab3;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.media.Image;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ public class UserAdapter extends RealmRecyclerViewAdapter<User, UserAdapter.View
         TextView passwordDisplay;
         ImageButton deleteButton;
         ImageButton editButton;
+        AlertDialog.Builder builder;
 
         public ViewHolder(@NonNull View itemView){
             super(itemView);
@@ -61,11 +64,29 @@ public class UserAdapter extends RealmRecyclerViewAdapter<User, UserAdapter.View
         holder.usernameDisplay.setText(u.getName());
         holder.passwordDisplay.setText(u.getPassword());
 
+        holder.builder = new AlertDialog.Builder(activity);
         holder.deleteButton.setTag(u);
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.delete((User) v.getTag());
+                holder.builder.setTitle("Caution: ")
+                                .setMessage("Are you sure you want to delete this user?")
+                                .setCancelable(true)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        activity.delete((User) v.getTag());
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                })
+                                .show();
+
+
             }
         });
 
