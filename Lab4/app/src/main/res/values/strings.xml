@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Lab4</string>
+
+    <!-- THIS MUST MATCH YOUR APP PACKAGE NAME OR ELSE CAMERA WILL-->
+    <!-- INDICATE A CONFLICTING PROVIDER -->
+    <string name="fileAuthority">evangelista.labs.lab4</string>
+</resources>
