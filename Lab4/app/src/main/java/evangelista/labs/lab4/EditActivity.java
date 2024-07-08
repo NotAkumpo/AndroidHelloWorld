@@ -88,6 +88,22 @@ public class EditActivity extends AppCompatActivity {
                 .equalTo("uuid", uuid)
                 .findFirst();
 
+        usernameInputE.setText(currentUser.getName());
+        passwordInputE.setText(currentUser.getPassword());
+
+        File getImageDir = getExternalCacheDir();
+        File file = new File(getImageDir, currentUser.getPath());
+
+        if (file.exists()) {
+            Picasso.get()
+                    .load(file)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                    .into(imageViewE);
+        }
+        else {
+            imageViewE.setImageResource(R.mipmap.ic_launcher);
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
