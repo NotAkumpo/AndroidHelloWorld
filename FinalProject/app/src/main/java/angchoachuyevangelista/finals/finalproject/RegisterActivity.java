@@ -1,8 +1,7 @@
-package evangelista.labs.lab4;
+package angchoachuyevangelista.finals.finalproject;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -28,90 +27,65 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
-public class EditActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
-
-    Button saveButtonE;
-    Button cancelButtonE;
-    EditText usernameInputE;
-    EditText passwordInputE;
-    EditText confirmInputE;
-    SharedPreferences prefs;
-    ImageView imageViewE;
+    Button saveButton;
+    Button cancelButton;
+    EditText usernameInputR;
+    EditText passwordInputR;
+    EditText confirmInput;
+    ImageView imageViewR;
     private String path;
     Realm realm;
-    Boolean usedCamera = false;
-    User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_edit);
+        setContentView(R.layout.activity_register);
 
         checkPermissions();
 
-        usernameInputE = findViewById(R.id.usernameInputE);
-        passwordInputE = findViewById(R.id.passwordInputE);
-        confirmInputE = findViewById(R.id.confirmInputE);
+        usernameInputR = findViewById(R.id.firstnameInputPA);
+        passwordInputR = findViewById(R.id.lastnameInputPA);
+        confirmInput = findViewById(R.id.classInputPA);
 
-        saveButtonE = findViewById(R.id.saveButtonE);
-        saveButtonE.setOnClickListener(new View.OnClickListener() {
+        saveButton = findViewById(R.id.saveButtonPA);
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveUser();
+                registerUser();
             }
         });
 
-        cancelButtonE = findViewById(R.id.cancelButtonE);
-        cancelButtonE.setOnClickListener(new View.OnClickListener() {
+        cancelButton = findViewById(R.id.cancelButtonPA);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cancelEdit();
+                cancelRegister();
             }
         });
-
-        imageViewE = findViewById(R.id.imageViewE);
-        imageViewE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openCamera();
-            }
-        });
-
-        prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
-        String uuid = prefs.getString("uuidE", null);
 
         realm = Realm.getDefaultInstance();
-
-        currentUser = realm.where(User.class)
-                .equalTo("uuid", uuid)
-                .findFirst();
-
-        usernameInputE.setText(currentUser.getName());
-        passwordInputE.setText(currentUser.getPassword());
-        confirmInputE.setText(currentUser.getPassword());
-
-        File getImageDir = getExternalCacheDir();
-        File file = new File(getImageDir, currentUser.getPath());
-
-        if (file.exists()) {
-            Picasso.get()
-                    .load(file)
-                    .networkPolicy(NetworkPolicy.NO_CACHE)
-                    .memoryPolicy(MemoryPolicy.NO_CACHE)
-                    .into(imageViewE);
-        }
-        else {
-            imageViewE.setImageResource(R.mipmap.ic_launcher);
-        }
+        RealmResults<User> users = realm.where(User.class).findAll();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        imageViewR = findViewById(R.id.professorImagePA);
+        imageViewR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCamera();
+            }
+        });
+
+
     }
 
 
@@ -122,8 +96,8 @@ public class EditActivity extends AppCompatActivity {
         // THESE PERMISSIONS SHOULD MATCH THE ONES IN THE MANIFEST
         Dexter.withContext(this)
                 .withPermissions(
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.CAMERA
 
                 )
@@ -153,11 +127,10 @@ public class EditActivity extends AppCompatActivity {
     }
 
 
-    public void saveUser(){
-        String username = usernameInputE.getText().toString();
-        String password = passwordInputE.getText().toString();
-        String confirm = confirmInputE.getText().toString();
-
+    public void registerUser(){
+        String username = usernameInputR.getText().toString();
+        String password = passwordInputR.getText().toString();
+        String confirm = confirmInput.getText().toString();
         User exists = realm.where(User.class)
                 .equalTo("name", username)
                 .findFirst();
@@ -173,25 +146,21 @@ public class EditActivity extends AppCompatActivity {
             }
             else {
                 if (password.equals(confirm)) {
-                    if(exists != null && !exists.getName().equals(currentUser.getName())) {
+                    if(exists != null) {
                         Toast toast = Toast.makeText(this, "User already exists", Toast.LENGTH_LONG);
                         toast.show();
                     }
                     else {
+                        User u = new User();
+                        u.setName(username);
+                        u.setPassword(password);
+                        u.setPath(path+".jpeg");
 
                         realm.beginTransaction();
-
-                        currentUser.setName(username);
-                        currentUser.setPassword(password);
-
-                        if (usedCamera) {
-                            currentUser.setPath(path + ".jpeg");
-                        }
-
-                        realm.copyToRealmOrUpdate(currentUser);
+                        realm.copyToRealmOrUpdate(u);
                         realm.commitTransaction();
 
-                        Toast toast = Toast.makeText(this, "Changes saved", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(this, "New User saved. Total: " + realm.where(User.class).count(), Toast.LENGTH_LONG);
                         toast.show();
 
                         finish();
@@ -205,7 +174,7 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-    public void cancelEdit(){
+    public void cancelRegister(){
         finish();
     }
 
@@ -231,13 +200,12 @@ public class EditActivity extends AppCompatActivity {
                     path = String.valueOf(System.currentTimeMillis());
 
                     File savedImage = saveFile(jpeg, path+".jpeg");
-                    usedCamera = true;
 
                     Picasso.get()
                             .load(savedImage)
                             .networkPolicy(NetworkPolicy.NO_CACHE)
                             .memoryPolicy(MemoryPolicy.NO_CACHE)
-                            .into(imageViewE);
+                            .into(imageViewR);
                 }
                 catch(Exception e)
                 {
@@ -262,6 +230,7 @@ public class EditActivity extends AppCompatActivity {
         return savedImage;
     }
 
+
     public void onDestroy(){
         super.onDestroy();
 
@@ -269,6 +238,5 @@ public class EditActivity extends AppCompatActivity {
             realm.close();
         }
     }
-
 
 }

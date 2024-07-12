@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ReviewListView">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Overall Rating: (x)/10 "
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="90dp"
+        tools:layout_editor_absoluteY="93dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Professor Name"
+        android:textSize="34sp"
+        tools:layout_editor_absoluteX="82dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="403dp"
+        android:layout_height="399dp"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="142dp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add a Review"
+        tools:layout_editor_absoluteX="134dp"
+        tools:layout_editor_absoluteY="541dp" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Return to Profs List"
+        tools:layout_editor_absoluteX="100dp"
+        tools:layout_editor_absoluteY="600dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Class"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="176dp"
+        tools:layout_editor_absoluteY="61dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

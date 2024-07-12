@@ -1,4 +1,4 @@
-package evangelista.labs.lab4;
+package angchoachuyevangelista.finals.finalproject;
 
 import android.Manifest;
 import android.content.Intent;
@@ -41,7 +41,6 @@ public class EditActivity extends AppCompatActivity {
     ImageView imageViewE;
     private String path;
     Realm realm;
-    Boolean usedCamera = false;
     User currentUser;
 
     @Override
@@ -122,8 +121,8 @@ public class EditActivity extends AppCompatActivity {
         // THESE PERMISSIONS SHOULD MATCH THE ONES IN THE MANIFEST
         Dexter.withContext(this)
                 .withPermissions(
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.CAMERA
 
                 )
@@ -183,10 +182,7 @@ public class EditActivity extends AppCompatActivity {
 
                         currentUser.setName(username);
                         currentUser.setPassword(password);
-
-                        if (usedCamera) {
-                            currentUser.setPath(path + ".jpeg");
-                        }
+                        currentUser.setPath(path+".jpeg");
 
                         realm.copyToRealmOrUpdate(currentUser);
                         realm.commitTransaction();
@@ -231,7 +227,6 @@ public class EditActivity extends AppCompatActivity {
                     path = String.valueOf(System.currentTimeMillis());
 
                     File savedImage = saveFile(jpeg, path+".jpeg");
-                    usedCamera = true;
 
                     Picasso.get()
                             .load(savedImage)
